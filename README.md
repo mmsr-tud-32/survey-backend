@@ -1,5 +1,7 @@
 # Survey backend
 
+Frontend is located at [mmsr-tud-32/survey](https://github.com/mmsr-tud-32/survey).
+
 ## Setup
 
 Create a user `mmsr` with password `mmsr` and a database `survey` on mysql. Or add a `.env.local` file which overrides the connection string to point to a different database.
