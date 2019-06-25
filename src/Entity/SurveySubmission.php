@@ -55,6 +55,11 @@ class SurveySubmission
      */
     private $age;
 
+    /**
+     * @ORM\Column(type="text")
+     */
+    private $feedback;
+
     public function __construct()
     {
         $this->images = new ArrayCollection();
@@ -154,6 +159,18 @@ class SurveySubmission
     public function setAge(int $age): self
     {
         $this->age = $age;
+
+        return $this;
+    }
+
+    public function getFeedback(): ?string
+    {
+        return $this->feedback;
+    }
+
+    public function setFeedback(string $feedback): self
+    {
+        $this->feedback = $feedback;
 
         return $this;
     }

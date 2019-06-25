@@ -43,6 +43,7 @@ class SurveySubmissionController extends BaseController {
 
             $submission->setUuid(Uuid::uuid4()->toString());
             $submission->setSubmitted(false);
+            $submission->setFeedback('');
             $submission->setSurvey($survey);
             $submission->setName($name);
             $submission->setAge($age);
@@ -131,10 +132,11 @@ class SurveySubmissionController extends BaseController {
      * @Route("/submission/{uuid}/submit", name="submit_survey", methods={"POST"})
      *
      * @param $uuid
+     * @param Request $request
      * @return JsonResponse
      * @throws NonUniqueResultException
      */
-    public function submitSurvey($uuid) {
+    public function submitSurvey($uuid, Request $request) {
         $surveySubmission = $this->getDoctrine()
             ->getRepository(SurveySubmission::class)
             ->findByUuid($uuid);
@@ -147,6 +149,7 @@ class SurveySubmissionController extends BaseController {
             }
         }
 
+        $surveySubmission->setFeedback($request->request->get('feedback'));
         $surveySubmission->setSubmitted(true);
 
         $this->getDoctrine()->getManager()->flush();
