@@ -42,6 +42,11 @@ class AddImagesCommand extends Command {
         $client = new Client();
 
         foreach ($images as $image) {
+            $imgExt = [ 'jpg', 'jpeg', 'png', 'gif' ];
+            if (in_array(pathinfo($image, PATHINFO_EXTENSION), $imgExt) != true) {
+                continue;
+            }
+
             $response = $client->request('POST', $host . 'survey/' . $survey . '/images', [
                 'verify' => false,
                 'multipart' => [

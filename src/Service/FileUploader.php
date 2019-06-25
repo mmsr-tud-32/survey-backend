@@ -36,7 +36,7 @@ class FileUploader {
                 'predefinedAcl' => 'publicRead'
             ]);
 
-            return "https://storage.cloud.google.com/" . $bucketName . '/' . $fileName;
+            return "https://storage.googleapis.com/" . $bucketName . '/' . $fileName;
         } else {
             file_put_contents($this->baseDir . '/' . $this->targetDirectory . '/' . $fileName, file_get_contents($file->getRealPath()));
 
