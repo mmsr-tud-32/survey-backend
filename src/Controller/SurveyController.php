@@ -7,7 +7,6 @@ use App\Entity\SurveyImage;
 use Doctrine\ORM\NonUniqueResultException;
 use Doctrine\ORM\NoResultException;
 use Exception;
-use Psr\Log\LoggerInterface;
 use Ramsey\Uuid\Uuid;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -29,6 +28,7 @@ class SurveyController extends BaseController {
         $survey->setUuid(Uuid::uuid4()->toString());
         $survey->setTitle($request->request->get('title'));
         $survey->setDescription($request->request->get('description'));
+        $survey->setLocked(false);
         $survey->setNumPractise($request->request->getInt('num_practise'));
         $survey->setNumQuestionShort($request->request->getInt('num_question_short'));
         $survey->setNumQuestionLong($request->request->getInt('num_question_long'));
@@ -54,6 +54,10 @@ class SurveyController extends BaseController {
         $survey = $this->getDoctrine()
             ->getRepository(Survey::class)
             ->findByUuid($uuid);
+
+        if ($survey->getLocked()) {
+            return $this->json(['message' => 'This survey is locked'], 400);
+        }
 
         if ($request->request->has('title')) {
             $survey->setTitle($request->request->get('title'));
@@ -99,14 +103,17 @@ class SurveyController extends BaseController {
      *
      * @param $uuid
      * @param Request $request
-     * @param LoggerInterface $logger
      * @return JsonResponse
      * @throws NoResultException
      * @throws NonUniqueResultException
      * @throws Exception
      */
-    public function addImage($uuid, Request $request, LoggerInterface $logger) {
+    public function addImage($uuid, Request $request) {
         $survey = $this->getDoctrine()->getRepository(Survey::class)->findByUuid($uuid);
+
+        if ($survey->getLocked()) {
+            return $this->json(['message' => 'This survey is locked'], 400);
+        }
 
         $surveyImage = new SurveyImage();
         $surveyImage->setUuid(Uuid::uuid4()->toString());
@@ -115,13 +122,28 @@ class SurveyController extends BaseController {
 
         $survey->addImage($surveyImage);
 
-        $logger->info('creating image!');
-
         $manager = $this->getDoctrine()->getManager();
         $manager->persist($surveyImage);
 
         $manager->flush();
 
         return $this->json($surveyImage);
+    }
+
+    /**
+     * @Route("/survey/{uuid}/lock", name="lock_survey", methods={"POST"})
+     * @param $uuid
+     * @return JsonResponse
+     * @throws NoResultException
+     * @throws NonUniqueResultException
+     */
+    public function lock($uuid) {
+        $survey = $this->getDoctrine()->getRepository(Survey::class)->findByUuid($uuid);
+
+        $survey->setLocked(true);
+
+        $this->getDoctrine()->getManager()->flush();
+
+        return $this->json([]);
     }
 }

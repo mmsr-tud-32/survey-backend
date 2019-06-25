@@ -75,6 +75,11 @@ class Survey
      */
     private $timeout_long;
 
+    /**
+     * @ORM\Column(type="boolean")
+     */
+    private $locked;
+
     public function __construct()
     {
         $this->images = new ArrayCollection();
@@ -240,6 +245,18 @@ class Survey
     public function setTimeoutLong(int $timeout_long): self
     {
         $this->timeout_long = $timeout_long;
+
+        return $this;
+    }
+
+    public function getLocked(): ?bool
+    {
+        return $this->locked;
+    }
+
+    public function setLocked(bool $locked): self
+    {
+        $this->locked = $locked;
 
         return $this;
     }

@@ -9,3 +9,4 @@
 ###< symfony/framework-bundle ###
 /public/uploads/
 app.yaml
+.idea
